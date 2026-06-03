@@ -5,10 +5,7 @@ API_KEY = "Your Gemini AI API KEY"
 genai.configure(api_key=API_KEY)
 
 def generate_report(scan_results):
-    """
-    Sentinel-7 Engine: Yeh function 7 mukhtalif tools ke data ko 
-    aggregate karke ek highly clean aur structured report generate karta hy.
-    """
+   
     try:
         model = genai.GenerativeModel('models/gemini-3.1-flash-lite')
     
@@ -57,4 +54,4 @@ def generate_report(scan_results):
             return "Error: STRYKER-7 could not generate report content."
 
     except Exception as e:
-        return f"Sentinel AI Engine Error: {str(e)}"
+        return f"STRYKER-7 AI Engine Error: {str(e)}"
