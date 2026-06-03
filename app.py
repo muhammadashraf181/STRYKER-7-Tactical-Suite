@@ -4,29 +4,24 @@ import ai_engine
 import time
 from fpdf import FPDF
 
-# 1. PAGE CONFIGURATION
 st.set_page_config(
     page_title="STRYKER-7 | Tactical Suite", 
     page_icon="logo.png", 
     layout="wide"
 )
 
-# 2. UPGRADED PROFESSIONAL PDF GENERATION ENGINE
 def create_pdf(text):
     class PDF(FPDF):
         def header(self):
-            # Header Banner Background
             self.set_fill_color(8, 12, 16) 
             self.rect(0, 0, 210, 35, 'F')
             
-            # Neon Green Accent Bar
             self.set_fill_color(0, 255, 65)
             self.rect(0, 34, 210, 1, 'F')
             
-            # Title
             self.set_y(12)
             self.set_font('Arial', 'B', 16)
-            self.set_text_color(0, 255, 65) # Tactical Neon Green
+            self.set_text_color(0, 255, 65) 
             self.cell(0, 10, 'STRYKER-7 TACTICAL AUDIT REPORT', 0, 1, 'C')
             self.ln(10)
 
@@ -34,7 +29,6 @@ def create_pdf(text):
             self.set_y(-15)
             self.set_font('Arial', 'I', 8)
             self.set_text_color(128, 128, 128)
-            # Professional security tag & dynamic page numbering
             self.cell(0, 10, f'CONFIDENTIAL // STRYKER-7 AUTOMATED SUITE', 0, 0, 'L')
             self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'R')
 
@@ -52,20 +46,17 @@ def create_pdf(text):
             pdf.ln(4)
             continue
             
-        # 1. Process Section Headers
         if line.startswith('[HEADER]'):
             pdf.ln(6)
             pdf.set_font("Arial", 'B', 14)
             pdf.set_text_color(11, 26, 18) 
             clean_header = line.replace('[HEADER]', '').strip()
             pdf.cell(0, 10, txt=clean_header, ln=1)
-            # Section Divider Underline
             pdf.set_draw_color(0, 255, 65)
             pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y())
             pdf.ln(4)
             continue
             
-        # 2. Table Parsing & Row Generation
         if '[TABLE]' in line:
             in_table = True
             continue
@@ -78,7 +69,6 @@ def create_pdf(text):
             col_widths = [30, 90, 35, 35] 
             columns = line.split(',')
             
-            # Header Row Styling vs Normal Row Styling
             if 'Tool' in line and 'Finding' in line:
                 pdf.set_font("Arial", 'B', 10)
                 pdf.set_fill_color(20, 30, 40) 
@@ -88,21 +78,18 @@ def create_pdf(text):
                 pdf.set_fill_color(245, 245, 245) 
                 pdf.set_text_color(0, 0, 0)
                 
-            # Render Individual Cells
             for idx, col_text in enumerate(columns):
                 if idx < len(col_widths):
-                    # Smart Severity Highlight Colors
                     if 'Critical' in col_text:
                         pdf.set_text_color(200, 0, 0) 
                     elif 'High' in col_text:
                         pdf.set_text_color(230, 100, 0) 
                         
                     pdf.cell(col_widths[idx], 8, txt=col_text.strip(), border=1, ln=0, fill=True)
-                    pdf.set_text_color(0, 0, 0) # Color reset back to black
+                    pdf.set_text_color(0, 0, 0)
             pdf.ln(8)
             continue
 
-        # 3. Text & Inline Bold Parsing
         pdf.set_font("Arial", size=10)
         pdf.set_text_color(40, 40, 40)
         
@@ -111,10 +98,8 @@ def create_pdf(text):
             for part in parts:
                 if '[ENDBOLD]' in part:
                     bold_subparts = part.split('[ENDBOLD]')
-                    # Bold block
                     pdf.set_font("Arial", 'B', 10)
                     pdf.write(6, bold_subparts[0])
-                    # Reset back to regular font
                     pdf.set_font("Arial", size=10)
                     pdf.write(6, bold_subparts[1])
                 else:
@@ -125,7 +110,6 @@ def create_pdf(text):
             
     return pdf.output(dest='S').encode('latin-1', 'replace')
 
-# 3. ADVANCED CYBER-READY UI (CSS)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Source+Code+Pro&display=swap');
@@ -201,7 +185,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR: CENTERED LOGO & STATUS
 with st.sidebar:
     st.markdown("""
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 20px 0;">
@@ -225,7 +208,6 @@ with st.sidebar:
     st.write("")
     st.markdown('<div style="border: 1px solid #58a6ff; color: #58a6ff; padding: 10px; text-align: center; border-radius: 4px; font-weight: bold; background: rgba(88, 166, 255, 0.05);">AI ENGINE: READY</div>', unsafe_allow_html=True)
 
-# 5. MAIN DASHBOARD
 st.markdown('<h1 class="main-title">STRYKER-7 TACTICAL SUITE</h1>', unsafe_allow_html=True)
 st.markdown("<p style='text-align:center; color:#8b949e; margin-bottom: 40px;'>Autonomous Security Assessment & Neural Reporting Engine</p>", unsafe_allow_html=True)
 
@@ -259,7 +241,6 @@ if execute_btn:
                 pdf_bytes = create_pdf(final_report)
                 st.download_button("DOWNLOAD PDF REPORT", data=pdf_bytes, file_name="Stryker7_Audit_Report.pdf", mime="application/pdf")
 
-# 6. FOOTER
 st.markdown(f"""
     <div class="footer">
         <span>Muhammad Ashraf | Cybersecurity Student</span> | 
