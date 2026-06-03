@@ -128,8 +128,8 @@ Ensure the following requirements are installed:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/STRYKER-7.git
-cd STRYKER-7
+[git clone https://github.com/muhammadashraf181/STRYKER-7-Tactical-Suite]
+cd STRYKER-7-Tactical-Suite
 ```
 
 ### Install Dependencies
