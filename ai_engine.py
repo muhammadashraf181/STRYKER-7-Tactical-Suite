@@ -1,8 +1,7 @@
 import google.generativeai as genai
 import os
 
-# 1. API Configuration
-API_KEY = "AIzaSyCwP2RgR9smtc1eLvT6LzF-1-BFCvCsQN8" 
+API_KEY = "Your Gemini AI API KEY" 
 genai.configure(api_key=API_KEY)
 
 def generate_report(scan_results):
@@ -12,10 +11,9 @@ def generate_report(scan_results):
     """
     try:
         model = genai.GenerativeModel('models/gemini-3.1-flash-lite')
-        
-        # Enhanced Prompt for exact PDF parsing compatibility
+    
         prompt = f"""
-        You are the Sentinel-7 AI Security Orchestrator.
+        You are the STRYKER-7 AI Security Orchestrator.
         Your task is to analyze raw output from a 7-tool VAPT suite and provide a unified tactical audit.
 
         ### INPUT DATA FROM TOOLS:
