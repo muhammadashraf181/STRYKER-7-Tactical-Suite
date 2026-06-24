@@ -231,12 +231,10 @@ Users are responsible for ensuring they have explicit authorization before perfo
 
 ## Future Enhancements
 
-* CVSS scoring integration
 * Asset inventory management
 * Multi-target scanning support
 * Vulnerability trend analytics
 * SIEM integration
-* Dark mode interface
 * Cloud deployment support
 * Advanced compliance reporting
 
