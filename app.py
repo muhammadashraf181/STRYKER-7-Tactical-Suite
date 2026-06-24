@@ -13,29 +13,44 @@ st.set_page_config(
 def create_pdf(text):
     class PDF(FPDF):
         def header(self):
-            self.set_fill_color(8, 12, 16) 
-            self.rect(0, 0, 210, 35, 'F')
-            
-            self.set_fill_color(0, 255, 65)
-            self.rect(0, 34, 210, 1, 'F')
-            
-            self.set_y(12)
-            self.set_font('Arial', 'B', 16)
-            self.set_text_color(0, 255, 65) 
-            self.cell(0, 10, 'STRYKER-7 TACTICAL AUDIT REPORT', 0, 1, 'C')
-            self.ln(10)
+            # Industry Standard: Heavy Banner sirf Page 1 par dikhana hy
+            if self.page_no() == 1:
+                # Header Banner Background
+                self.set_fill_color(8, 12, 16) 
+                self.rect(0, 0, 210, 35, 'F')
+                
+                # Neon Green Accent Bar
+                self.set_fill_color(0, 255, 65)
+                self.rect(0, 34, 210, 1, 'F')
+                
+                # Title
+                self.set_y(12)
+                self.set_font('Arial', 'B', 16)
+                self.set_text_color(0, 255, 65) 
+                self.cell(0, 10, 'STRYKER-7 TACTICAL AUDIT REPORT', 0, 1, 'C')
+            else:
+                # Page 2 and onwards: Minimalist Clean Header taake material na chhupe
+                self.set_y(10)
+                self.set_font('Arial', 'B', 8)
+                self.set_text_color(128, 128, 128)
+                self.cell(0, 5, 'STRYKER-7 SECURE AUDIT PIPELINE', 0, 0, 'L')
+                self.set_draw_color(200, 200, 200)
+                self.line(10, 16, 200, 16)
+                self.ln(10)
 
         def footer(self):
             self.set_y(-15)
             self.set_font('Arial', 'I', 8)
             self.set_text_color(128, 128, 128)
-            self.cell(0, 10, f'CONFIDENTIAL // STRYKER-7 AUTOMATED SUITE', 0, 0, 'L')
+            self.cell(0, 10, 'CONFIDENTIAL // STRYKER-7 AUTOMATED SUITE', 0, 0, 'L')
             self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'R')
 
     pdf = PDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=20)
-    pdf.ln(15) 
+    
+    # Page 1 content padding adjustment to avoid banner overlap
+    pdf.set_y(45) 
     
     lines = text.split('\n')
     in_table = False
@@ -46,64 +61,77 @@ def create_pdf(text):
             pdf.ln(4)
             continue
             
-        if line.startswith('[HEADER]'):
+        # 1. Process Section Headers
+        if line.startswith('[HEADER]') or (line.startswith('#') and not in_table):
+            clean_header = line.replace('[HEADER]', '').replace('#', '').strip()
             pdf.ln(6)
             pdf.set_font("Arial", 'B', 14)
-            pdf.set_text_color(11, 26, 18) 
-            clean_header = line.replace('[HEADER]', '').strip()
+            pdf.set_text_color(8, 12, 16) 
             pdf.cell(0, 10, txt=clean_header, ln=1)
             pdf.set_draw_color(0, 255, 65)
             pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y())
             pdf.ln(4)
             continue
             
-        if '[TABLE]' in line:
+            # ===== YAHAN PAR YEH NAYA CODE PASTE KAREIN =====
+        # 2. FIXED ADVANCED TABLE HANDLER (No layout crash)
+        if line.startswith('"') and ',' in line:
             in_table = True
-            continue
-        if '[ENDTABLE]' in line:
-            in_table = False
-            pdf.ln(5)
-            continue
+            col_widths = [35, 80, 35, 40] # Total 190mm space for standard layout
             
-        if in_table:
-            col_widths = [30, 90, 35, 35] 
-            columns = line.split(',')
+            # Quotes aur trailing commas ko cleanly split karne ka logic
+            raw_columns = line.split('","')
+            columns = [c.replace('"', '').strip() for c in raw_columns]
             
-            if 'Tool' in line and 'Finding' in line:
+            if not columns or len(columns) < 2:
+                continue
+                
+            # Table Header Row Check
+            if 'Tool' in columns[0] or 'Finding' in columns[1] or 'Severity' in columns[0] or 'Savarity' in columns[0]:
                 pdf.set_font("Arial", 'B', 10)
-                pdf.set_fill_color(20, 30, 40) 
+                pdf.set_fill_color(8, 12, 16) # Elegant Corporate Dark Banner
                 pdf.set_text_color(255, 255, 255)
             else:
-                pdf.set_font("Courier", size=9) 
-                pdf.set_fill_color(245, 245, 245) 
-                pdf.set_text_color(0, 0, 0)
+                pdf.set_font("Arial", size=9) 
+                pdf.set_fill_color(248, 249, 250) # Matrix Clean Zebra Row Fill
+                pdf.set_text_color(30, 30, 30)
                 
             for idx, col_text in enumerate(columns):
                 if idx < len(col_widths):
-                    if 'Critical' in col_text:
-                        pdf.set_text_color(200, 0, 0) 
-                    elif 'High' in col_text:
-                        pdf.set_text_color(230, 100, 0) 
+                    # Severity Metrics Smart Font Color Assignment
+                    if 'Critical' in col_text or 'High' in col_text:
+                        pdf.set_text_color(180, 0, 0) 
+                    elif 'Medium' in col_text:
+                        pdf.set_text_color(210, 105, 30) 
+                    elif 'Low' in col_text:
+                        pdf.set_text_color(0, 100, 0)
                         
-                    pdf.cell(col_widths[idx], 8, txt=col_text.strip(), border=1, ln=0, fill=True)
-                    pdf.set_text_color(0, 0, 0)
+                    pdf.cell(col_widths[idx], 8, txt=col_text, border=1, ln=0, fill=True)
+                    
+                    # Reset colors for standard contents
+                    if 'Tool' in columns[0] or 'Finding' in columns[1]:
+                        pdf.set_text_color(255, 255, 255)
+                    else:
+                        pdf.set_text_color(30, 30, 30)
             pdf.ln(8)
             continue
-
+        else:
+            if in_table:
+                in_table = False
+                pdf.ln(4)
+                
         pdf.set_font("Arial", size=10)
         pdf.set_text_color(40, 40, 40)
         
-        if '[BOLD]' in line:
-            parts = line.split('[BOLD]')
-            for part in parts:
-                if '[ENDBOLD]' in part:
-                    bold_subparts = part.split('[ENDBOLD]')
-                    pdf.set_font("Arial", 'B', 10)
-                    pdf.write(6, bold_subparts[0])
-                    pdf.set_font("Arial", size=10)
-                    pdf.write(6, bold_subparts[1])
+        if '[BOLD]' in line or '**' in line:
+            clean_line = line.replace('[BOLD]', '**').replace('[ENDBOLD]', '**')
+            parts = clean_line.split('**')
+            for i, part in enumerate(parts):
+                if i % 2 != 0:
+                    pdf.set_font("Arial", 'B', 10) 
                 else:
-                    pdf.write(6, part)
+                    pdf.set_font("Arial", size=10) 
+                pdf.write(6, part)
             pdf.ln(6)
         else:
             pdf.multi_cell(0, 6, txt=line)
@@ -221,15 +249,34 @@ if execute_btn:
         col_cmd, col_report = st.columns([1, 1.3])
         with col_cmd:
             st.markdown("### COMMAND CENTER")
+            
+            timer_text = st.empty()
+            percentage_text = st.empty()
             progress_bar = st.progress(0)
             status_text = st.empty()
+            
             results = {}
             tools = ["Nmap", "Nuclei", "Nikto", "Gobuster", "SQLMap", "WP-Scan", "OWASP ZAP"]
+            
+            start_time = time.time()
+            
             for i, tool in enumerate(tools):
+                current_pct = int((i / len(tools)) * 100)
+                elapsed_time = time.time() - start_time
+                
+                timer_text.markdown(f"**ELAPSED TIME:** `{elapsed_time:.1f}s`")
+                percentage_text.markdown(f"**COMPLETION:** `{current_pct}%`")
+                progress_bar.progress(i / len(tools))
                 status_text.markdown(f"**Executing:** `{tool}`...")
+
                 results[tool] = scanner.run_specific_tool(tool, target_url)
-                progress_bar.progress((i + 1) / len(tools))
                 time.sleep(0.4)
+                
+            total_time = time.time() - start_time
+            timer_text.markdown(f"**TOTAL SCAN TIME:** `{total_time:.1f}s`")
+            percentage_text.markdown(f"**COMPLETION:** `100%`")
+            progress_bar.progress(1.0)
+            status_text.empty()
             st.success("DEPLOYMENT COMPLETE")
 
         with col_report:
