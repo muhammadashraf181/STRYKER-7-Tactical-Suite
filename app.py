@@ -13,23 +13,18 @@ st.set_page_config(
 def create_pdf(text):
     class PDF(FPDF):
         def header(self):
-            # Industry Standard: Heavy Banner sirf Page 1 par dikhana hy
             if self.page_no() == 1:
-                # Header Banner Background
                 self.set_fill_color(8, 12, 16) 
                 self.rect(0, 0, 210, 35, 'F')
                 
-                # Neon Green Accent Bar
                 self.set_fill_color(0, 255, 65)
                 self.rect(0, 34, 210, 1, 'F')
                 
-                # Title
                 self.set_y(12)
                 self.set_font('Arial', 'B', 16)
                 self.set_text_color(0, 255, 65) 
                 self.cell(0, 10, 'STRYKER-7 TACTICAL AUDIT REPORT', 0, 1, 'C')
             else:
-                # Page 2 and onwards: Minimalist Clean Header taake material na chhupe
                 self.set_y(10)
                 self.set_font('Arial', 'B', 8)
                 self.set_text_color(128, 128, 128)
@@ -49,7 +44,6 @@ def create_pdf(text):
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=20)
     
-    # Page 1 content padding adjustment to avoid banner overlap
     pdf.set_y(45) 
     
     lines = text.split('\n')
@@ -61,7 +55,6 @@ def create_pdf(text):
             pdf.ln(4)
             continue
             
-        # 1. Process Section Headers
         if line.startswith('[HEADER]') or (line.startswith('#') and not in_table):
             clean_header = line.replace('[HEADER]', '').replace('#', '').strip()
             pdf.ln(6)
@@ -73,27 +66,23 @@ def create_pdf(text):
             pdf.ln(4)
             continue
             
-            # ===== YAHAN PAR YEH NAYA CODE PASTE KAREIN =====
-        # 2. FIXED ADVANCED TABLE HANDLER (No layout crash)
         if line.startswith('"') and ',' in line:
             in_table = True
-            col_widths = [35, 80, 35, 40] # Total 190mm space for standard layout
+            col_widths = [35, 80, 35, 40] 
             
-            # Quotes aur trailing commas ko cleanly split karne ka logic
             raw_columns = line.split('","')
             columns = [c.replace('"', '').strip() for c in raw_columns]
             
             if not columns or len(columns) < 2:
                 continue
                 
-            # Table Header Row Check
             if 'Tool' in columns[0] or 'Finding' in columns[1] or 'Severity' in columns[0] or 'Savarity' in columns[0]:
                 pdf.set_font("Arial", 'B', 10)
-                pdf.set_fill_color(8, 12, 16) # Elegant Corporate Dark Banner
+                pdf.set_fill_color(8, 12, 16)
                 pdf.set_text_color(255, 255, 255)
             else:
                 pdf.set_font("Arial", size=9) 
-                pdf.set_fill_color(248, 249, 250) # Matrix Clean Zebra Row Fill
+                pdf.set_fill_color(248, 249, 250)
                 pdf.set_text_color(30, 30, 30)
                 
             for idx, col_text in enumerate(columns):
@@ -108,7 +97,6 @@ def create_pdf(text):
                         
                     pdf.cell(col_widths[idx], 8, txt=col_text, border=1, ln=0, fill=True)
                     
-                    # Reset colors for standard contents
                     if 'Tool' in columns[0] or 'Finding' in columns[1]:
                         pdf.set_text_color(255, 255, 255)
                     else:
