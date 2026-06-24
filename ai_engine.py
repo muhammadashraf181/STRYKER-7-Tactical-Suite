@@ -1,14 +1,12 @@
 import google.generativeai as genai
-import os
 
 API_KEY = "Your Gemini AI API KEY" 
 genai.configure(api_key=API_KEY)
 
 def generate_report(scan_results):
-   
     try:
         model = genai.GenerativeModel('models/gemini-3.1-flash-lite')
-    
+        
         prompt = f"""
         You are the STRYKER-7 AI Security Orchestrator.
         Your task is to analyze raw output from a 7-tool VAPT suite and provide a unified tactical audit.
@@ -17,41 +15,38 @@ def generate_report(scan_results):
         {scan_results}
 
         ### CRITICAL OUTPUT INSTRUCTIONS:
-        1. DO NOT use raw Markdown headers like '##' or '###'. Instead, prefix headers with '[HEADER]' or '[SUBHEADER]'.
-           Example: [HEADER] 1. EXECUTIVE SUMMARY
-        2. DO NOT use asterisks '**' or '__' for bolding. Use '[BOLD] text [ENDBOLD]' for important terms.
-        3. Do not use markdown pipe tables. Format tabular data clearly as comma-separated values under a '[TABLE]' tag, like this:
-           [TABLE]
-           Tool, Finding, Severity, Status
-           Nmap, Open Port 80, Medium, Confirmed
-           [ENDTABLE]
-        4. Provide specific remediation commands or configuration fixes.
+        1. DO NOT use any markdown characters like hashtags (#), asterisks (*), or underscores (_) anywhere in the report.
+        2. Format Main Headers in ALL CAPS with a blank line before and after them.
+        3. Format Subheadings in Title Case (Capitalize Each Word) with a blank line before them.
+        4. Present data in a clean, standard text-based table structure without markdown pipes. Use dashes (-) for dividers.
+        5. Provide specific remediation commands or configuration fixes clearly on new lines.
 
         ### REQUIRED REPORT STRUCTURE:
-        [HEADER] 1. EXECUTIVE SUMMARY
-        (Brief overview of the target's security posture)
-        
-        [HEADER] 2. AGGREGATED FINDINGS TABLE
-        [TABLE]
-        Tool, Finding, Severity, Status
-        (Populate dynamically based on scan results)
-        [ENDTABLE]
+        STRYKER-7 TACTICAL AUDIT REPORT
 
-        [HEADER] 3. DEEP DIVE ANALYSIS
-        (Detailed explanation of Critical/High risks)
+        1. EXECUTIVE SUMMARY
+        [Provide text here]
 
-        [HEADER] 4. STRATEGIC REMEDIATION PLAN
-        (Step-by-step technical fixes for the sysadmin/developer)
+        2. AGGREGATED FINDINGS TABLE
+        Tool ---------------- Finding ---------------- Severity ---------------- CVSS ---- Status
+        [Populate data rows here]
+
+        3. DEEP DIVE ANALYSIS
+        Information Disclosure (phpinfo)
+        [Provide text here]
+
+        Administrative Interfaces and Configuration Issues
+        [Provide text here]
+
+        4. STRATEGIC REMEDIATION PLAN
+        Immediate Hardening Actions
+        [Provide step-by-step technical fixes and commands]
 
         Tone: Concise, tactical, and highly professional.
         """
 
         response = model.generate_content(prompt)
-        
-        if response.text:
-            return response.text
-        else:
-            return "Error: STRYKER-7 could not generate report content."
+        return response.text if response.text else "Error: STRYKER-7 could not generate report content."
 
     except Exception as e:
-        return f"STRYKER-7 AI Engine Error: {str(e)}"
+        return f"STRYKER AI Engine Error: {str(e)}"
