@@ -240,18 +240,6 @@ Users are responsible for ensuring they have explicit authorization before perfo
 
 ---
 
-## Author
-
-**Muhammad Ashraf**
-
-Cybersecurity Student | Digital Forensics & Cybersecurity Enthusiast
-
-LinkedIn: https://www.linkedin.com/in/muhammad-ashraf-09873733a
-
-Portfolio: https://muhammad-ashraf-portfolio-ten.vercel.app
-
----
-
 ## License
 
 This project is released for educational and research purposes. Please review and comply with all applicable laws, regulations, and organizational policies before use.
