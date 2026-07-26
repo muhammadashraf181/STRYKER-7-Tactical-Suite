@@ -135,7 +135,7 @@ cd STRYKER-7-Tactical-Suite
 ### Install Dependencies
 
 ```bash
-pip install streamlit google-generativeai fpdf2
+python3 -m pip install --break-system-packages streamlit google-generativeai fpdf2
 ```
 
 ---
